@@ -2,28 +2,81 @@
 
 class SchemeParser(object):
     class token(object):
-        def __init__(self, token):
-            self.token = token
+        pass
 
     class tuple(token):
         symbol = '('
 
+        def __init__(self, value):
+            self.value = value
+
         def eval(self):
-            return self.token[0](*[token.eval() for token in self.token[1:]])
+            return self.value[0].eval(*[token.eval() for token in self.value[1:]])
+
+        def __str__(self):
+            return '(%s)' % ' '.join([str(val) for val in self.value])
+
+        def __getattr__(self, key):
+            return self.value[key]
 
     class literal(token):
         symbol = "'"
 
+        def __init__(self, value):
+            self.value = value
+
         def eval(self):
-            return self.token
+            return self.value
+
+        def __str__(self):
+            return "'%s" % self.value
 
     class plus(token):
         symbol = '+'
 
-        def eval(self):
-            return self.token[0] + self.token[1]
+        def eval(self, a, b):
+            return a + b
 
-    _map = dict()
+        def __str__(self):
+            return '+'
+
+    class minus(token):
+        symbol = '-'
+
+        def eval(self, a, b):
+            return a - b
+
+        def __str__(self):
+            return '-'
+
+    class car(token):
+        symbol = 'car'
+
+        def eval(self, l):
+            return l.value[0]
+
+        def __str__(self):
+            return 'car'
+
+    class cdr(token):
+        symbol = 'cdr'
+
+        def eval(self, l):
+            return SchemeParser.tuple(l.value[1:])
+
+        def __str__(self):
+            return 'cdr'
+
+    class cons(token):
+        symbol = 'cons'
+
+        def eval(self, a, b):
+            return SchemeParser.tuple([ a ] + b.value)
+
+        def __str__(self):
+            return 'cons'
+
+    _map = None
 
     _white = [
         ' ',
@@ -41,103 +94,77 @@ class SchemeParser(object):
             i += 1
         self.txt = self.txt[i:]
 
-    def parse(self):
+    def parse(self, literal=False):
         self._eat_white()
-        l = []
-        while self.txt:
-            c = self.txt[0]
+        c = self.txt[0]
+        if c == '(':
             self.txt = self.txt[1:]
-            if c == '(':
-                token = self.parse()
+            l = []
+            while self.txt[0] != ')':
+                l.append(self.parse())
+                # needed in case there is whitespace before the )
+                self._eat_white()
+            self.txt = self.txt[1:]
+            return SchemeParser.tuple(l)
 
-            elif c == ')':
-                break
+        elif c == "'":
+            self.txt = self.txt[1:]
+            return SchemeParser.literal(self.parse(literal=True))
 
-            elif c == "'":
-                # literal
-                # token = self.literal?
-                pass
+        i = 0
+        while i < len(self.txt) and self.txt[i] not in SchemeParser._white and self.txt[i] != ')':
+            i += 1
 
-            elif c >= '0' and c <= '9':
-                n = [c]
-                i = 0
-                while self.txt[i] >= '0' and self.txt[i] <= '9':
-                    n.append(self.txt[i])
-                    i += 1
-                self.txt = self.txt[len(n) - 1:]
-                if self.txt[0] not in (' ', ')'):
-                    raise Exception("Unexpected char %r after number chars %r" % (self.txt[0], ''.join(n)))
-                token = int(''.join(n))
+        value = self.txt[:i]
+        self.txt = self.txt[i:]
 
-            elif c == ' ':
-                continue
+        if literal:
+            return value
 
-            elif c in Scheme._funcs:
-                token = Scheme._funcs[c]
+        if value[0] >= '0' and value[0] <= '9':
+            return SchemeParser.literal(int(value))
 
-            else:
-                raise Exception("Unknown char %r" % c)
+        return SchemeParser._map[value]()
 
-            l.append(token)
-
-        return l
+SchemeParser._map = dict(
+    [(cls.symbol, cls) for cls in
+     [getattr(SchemeParser, name) for name in SchemeParser.__dict__]
+     if isinstance(cls, type) and issubclass(cls, SchemeParser.token) and 'symbol' in cls.__dict__])
 
 class Scheme(object):
-    _funcs = {
-        '+':    'plus',
-        '-':    'minus',
-        'car':  'car',
-        'cdr':  'cdr',
-        'cons': 'cons',
-    }
-
     def __init__(self, arg):
-        if isinstance(arg, list):
-            self.tokens = arg
+        print "Input: %s" % arg
+
+        if isinstance(arg, SchemeParser.token):
+            self.token = arg
         elif isinstance(arg, SchemeParser):
-            self.tokens = arg.parse()[0]
+            self.token = arg.parse()
         else:
-            self.tokens = SchemeParser(arg).parse()[0]
+            self.token = SchemeParser(arg).parse()
+
+        print "Token: %s" % self.token
     
     def eval(self):
-        return self._eval(self.tokens)
+        return self.token.eval()
 
-    def _eval(self, tokens):
-        return tokens[0](*self._resolve(tokens[1:]))
+#    def _resolve(self, tokens):
+#        r = []
+#        for t in tokens:
+#            if isinstance(t, list):
+#                r.append(self._eval(t))
+#            else:
+#                r.append(t)
+#        return r
 
-    def _resolve(self, tokens):
-        r = []
-        for t in tokens:
-            if isinstance(t, list):
-                r.append(self._eval(t))
-            else:
-                r.append(t)
-        return r
-
-
-    @staticmethod
-    def plus(a, b):
-        return a + b
-
-    @staticmethod
-    def minus(a, b):
-        return a - b
-
-    @staticmethod
-    def car(l):
-        return l[0]
-
-    @staticmethod
-    def cdr(l):
-        return l[1:]
-
-    @staticmethod
-    def cons(a, b):
-        return [ a ] + b
-
-for k in Scheme._funcs:
-    Scheme._funcs[k] = getattr(Scheme, Scheme._funcs[k])
-
-print Scheme('(+ 1 2)').eval()
-print Scheme('(- 3 2)').eval()
-print Scheme("(cons (+ 1 (- 3 (+ 15 34))) '(4 5))").eval()
+print "Value: %s" % Scheme('(+ 1 2)').eval()
+print
+print "Value: %s" % Scheme('(- 3 2)').eval()
+print
+print "Value: %s" % Scheme("(car '(1 2 3))").eval()
+print
+print "Value: %s" % Scheme("(cdr '(1 2 3))").eval()
+print
+print "Value: %s" % Scheme("(cons 3 '(1 2))").eval()
+print
+print "Value: %s" % Scheme("(cons (+ 1 (- 3 (+ 15 34))) '(4 5))").eval()
+print
