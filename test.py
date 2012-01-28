@@ -14,6 +14,14 @@ for expr in [
         "(if #t 'y 'n)",
         "(if #f 'y 'n)",
         "(if '1 'y 'n)",
+        "(> 1 3)",
+        "(> 3 1)",
+        "(< 1 3)",
+        "(< 3 1)",
+        "(if (< 1 3) 'y 'n)",
+        "(if (> 1 3) 'y 'n)",
+        "(if (< 1 3) (+ 1 3) (- 1 3))",
+        "(if (> 1 3)  (+ 1 3) (- 1 3))",
         ]:
     print "Input: %s" % expr
     token = SchemeParser(expr).parse()

@@ -45,7 +45,7 @@ class SchemeParser(object):
             return value
 
         if value[0] >= '0' and value[0] <= '9':
-            return token.literal(int(value))
+            return token._int(value)
 
         if value == '#t' or value == '#f':
             return token.boolean(value)

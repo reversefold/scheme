@@ -33,17 +33,36 @@ class literal(token):
     def __str__(self):
         return "'%s" % self.value
 
+class _int(literal):
+    def __init__(self, value):
+        self.value = int(value)
+
+    def __str__(self):
+        return str(self.value)
+
 class plus(token):
     symbol = '+'
 
     def eval(self, a, b):
-        return literal(a.eval().value + b.eval().value)
+        return _int(a.eval().value + b.eval().value)
 
 class minus(token):
     symbol = '-'
 
     def eval(self, a, b):
-        return literal(a.eval().value - b.eval().value)
+        return _int(a.eval().value - b.eval().value)
+
+class gt(token):
+    symbol = '>'
+
+    def eval(self, a, b):
+        return boolean(a.eval().value > b.eval().value)
+
+class lt(token):
+    symbol = '<'
+
+    def eval(self, a, b):
+        return boolean(a.eval().value < b.eval().value)
 
 class car(token):
     symbol = 'car'
@@ -65,6 +84,10 @@ class cons(token):
 
 class boolean(token):
     def __init__(self, value):
+        if value is True:
+            value = '#t'
+        elif value is False:
+            value = '#f'
         self.value = value
 
     def eval(self):
@@ -81,9 +104,9 @@ class _if(token):
 
     def eval(self, cond, t, f):
         if cond.eval().bool():
-            return t
+            return t.eval()
         else:
-            return f
+            return f.eval()
 
 _map = dict(
     [(cls.symbol, cls) for cls in locals().values()
