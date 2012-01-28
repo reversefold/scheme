@@ -11,12 +11,13 @@ class SchemeParser(object):
             self.value = value
 
         def eval(self):
-            return self.value[0].eval(*[token.eval() for token in self.value[1:]])
+            #return self.value[0].eval(*[token.eval() for token in self.value[1:]])
+            return self.value[0].eval(*self.value[1:])
 
         def __str__(self):
             return '(%s)' % ' '.join([str(val) for val in self.value])
 
-        def __getattr__(self, key):
+        def __getitem__(self, key):
             return self.value[key]
 
     class literal(token):
@@ -35,7 +36,7 @@ class SchemeParser(object):
         symbol = '+'
 
         def eval(self, a, b):
-            return a + b
+            return a.eval() + b.eval()
 
         def __str__(self):
             return '+'
@@ -44,7 +45,7 @@ class SchemeParser(object):
         symbol = '-'
 
         def eval(self, a, b):
-            return a - b
+            return a.eval() - b.eval()
 
         def __str__(self):
             return '-'
@@ -71,7 +72,7 @@ class SchemeParser(object):
         symbol = 'cons'
 
         def eval(self, a, b):
-            return SchemeParser.tuple([ a ] + b.value)
+            return SchemeParser.tuple([ a.eval() ] + (b.value.value if isinstance(b.value, SchemeParser.tuple) else b.value))
 
         def __str__(self):
             return 'cons'
@@ -142,15 +143,6 @@ class Scheme(object):
     
     def eval(self):
         return self.token.eval()
-
-#    def _resolve(self, tokens):
-#        r = []
-#        for t in tokens:
-#            if isinstance(t, list):
-#                r.append(self._eval(t))
-#            else:
-#                r.append(t)
-#        return r
 
 for expr in [
         '(+ 1 2)',
