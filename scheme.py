@@ -133,16 +133,12 @@ SchemeParser._map = dict(
 
 class Scheme(object):
     def __init__(self, arg):
-        print "Input: %s" % arg
-
         if isinstance(arg, SchemeParser.token):
             self.token = arg
         elif isinstance(arg, SchemeParser):
             self.token = arg.parse()
         else:
             self.token = SchemeParser(arg).parse()
-
-        print "Token: %s" % self.token
     
     def eval(self):
         return self.token.eval()
@@ -156,15 +152,16 @@ class Scheme(object):
 #                r.append(t)
 #        return r
 
-print "Value: %s" % Scheme('(+ 1 2)').eval()
-print
-print "Value: %s" % Scheme('(- 3 2)').eval()
-print
-print "Value: %s" % Scheme("(car '(1 2 3))").eval()
-print
-print "Value: %s" % Scheme("(cdr '(1 2 3))").eval()
-print
-print "Value: %s" % Scheme("(cons 3 '(1 2))").eval()
-print
-print "Value: %s" % Scheme("(cons (+ 1 (- 3 (+ 15 34))) '(4 5))").eval()
-print
+for expr in [
+        '(+ 1 2)',
+        '(- 3 2)',
+        "(car '(1 2 3))",
+        "(cdr '(1 2 3))",
+        "(cons 3 '(1 2))",
+        "(cons (+ 1 (- 3 (+ 15 34))) '(4 5))",
+        ]:
+    print "Input: %s" % expr
+    token = SchemeParser(expr).parse()
+    print "Token: %s" % token
+    s = Scheme(token)
+    print "Value: %s\n" % s.eval()
