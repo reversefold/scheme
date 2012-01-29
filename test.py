@@ -68,6 +68,7 @@ for expr in [
       ((a e i o u) 'vowel)
       ((w y) 'semivowel)
       (else 'consonant))""",
+        '(quote (1 2 3))'
         ]:
     print "Input: %s" % expr
     token = SchemeParser(expr).parse()

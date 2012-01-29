@@ -28,15 +28,22 @@ class literal(token):
     def __str__(self):
         return "'%s" % self.value
 
-class int_t(literal):
+class quote(token):
+    symbol = 'quote'
+
+    def eval(self, l):
+        return literal(l)
+
+class number(literal):
     def __init__(self, value):
-        self.value = int(value)
+        import decimal
+        self.value = decimal.Decimal(value)
 
     def __eq__(self, r):
-        return r.__class__ is int_t and self.value == r.value
+        return r.__class__ is number and self.value == r.value
 
     def __ne__(self, r):
-        return r.__class__ is not int_t or self.value != r.value
+        return r.__class__ is not number or self.value != r.value
 
     def __str__(self):
         return str(self.value)

@@ -44,8 +44,9 @@ class SchemeParser(object):
         if literal:
             return value
 
+        # TODO: support + - . inexact vs exact
         if value[0] >= '0' and value[0] <= '9':
-            return token.int_t(value)
+            return token.number(value)
 
         if value == '#t' or value == '#f':
             return token.boolean(value)

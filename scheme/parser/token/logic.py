@@ -1,4 +1,4 @@
-from scheme.parser.token import base, eqv
+from scheme.parser.token import base, equivalency
 
 class and_t(base.token):
     symbol = 'and'
@@ -63,7 +63,7 @@ class case(base.token):
             else:
                 found = False
                 for v in i[0]:
-                    if eqv.eval(val, v):
+                    if equivalency.eqv.eval(val, v):
                         found = True
                         break
             if found:

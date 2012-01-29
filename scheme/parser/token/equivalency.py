@@ -7,6 +7,10 @@ class eqv(base.token):
     def eval(a, b):
         if a.__class__ != b.__class__:
             return base.boolean(False)
+        if isinstance(a, base.tuple) and isinstance(b, base.tuple) and len(a.value) == 0 and len(b.value) == 0:
+            return base.boolean(True)
+        if isinstance(a, base.boolean) and isinstance(b, base.boolean) and a.value == b.value:
+            return base.boolean(True)
         if a != b:
             return base.boolean(False)
         return base.boolean(True)
