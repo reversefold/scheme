@@ -1,8 +1,10 @@
 from base import *
+from char import *
 from equivalency import *
 from list import *
 from logic import *
 from operator import *
+from string import *
 
 _map = dict(
     [(cls.symbol, cls) for cls in locals().values()

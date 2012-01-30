@@ -9,6 +9,6 @@ class Scheme(object):
             self.token = arg.parse()
         else:
             self.token = SchemeParser(arg).parse()
-    
+
     def eval(self):
         return self.token.eval()

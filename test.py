@@ -78,12 +78,26 @@ for expression, expected in [
       ((w y) 'semivowel)
       (else 'consonant))""", "consonant"),
         ('(quote (1 2 3))', "(1 2 3)"),
+        ('"I am a string"', 'I am a string'),
+        ('"\\""', '"'),
+        ('" escapism \\" escapism"', ' escapism " escapism'),
+        ('" esc \\\\ \\""', ' esc \\ "'),
+        ('(if (> 2 1) "2 > 1" "2 < 1")', '2 > 1'),
+        ('#\\a', '#\\a'),
+        ('#\\A', '#\\A'),
+        ('#\\(', '#\\('),
+        ('#\\space', '#\\space'),
+        ('(string #\\space)', '" "'),
+        ('(eq? (string #\\space) " ")', '#f'),
+        ('(eqv? (string #\\space) " ")', '#f'),
+        ('(equal? (string #\\space) " ")', '#t'),
         ]:
+
     token = SchemeParser(expression).parse()
     s = Scheme(token)
     result = s.eval()
     if str(result) != expected:
-        print "Input:    %s" % expression
-        print "Token:    %s" % token
+        print "Input:    %s" % (expression,)
+        print "Token:    %s" % (token,)
         print "Value:    %s" % (result,)
         print "Expected: %s\n" % (expected,)
