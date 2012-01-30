@@ -17,7 +17,13 @@ class SchemeParser(object):
             i += 1
         self.txt = self.txt[i:]
 
-    def parse(self, literal=False):
+    def parse(self):
+        """
+        Parses the txt passed into __init__.
+
+        Only parses a single token at a time, calls itself recursively. After a single token is parsed, this function returns.
+        """
+
         self._eat_white()
         c = self.txt[0]
         if c == '(':
@@ -32,7 +38,7 @@ class SchemeParser(object):
 
         elif c == "'":
             self.txt = self.txt[1:]
-            return token.literal(self.parse(literal=True))
+            return token.quoted(self.parse())
 
         i = 0
         while i < len(self.txt) and self.txt[i] not in SchemeParser._white and self.txt[i] != ')':
@@ -40,9 +46,6 @@ class SchemeParser(object):
 
         value = self.txt[:i]
         self.txt = self.txt[i:]
-
-        if literal:
-            return value
 
         # TODO: support + - . inexact vs exact
         if value[0] >= '0' and value[0] <= '9':
