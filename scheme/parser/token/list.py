@@ -36,20 +36,8 @@ class cons(base.token):
     def eval(self, env, a, b):
         return base.tuple([a.eval(env)]) + b.eval(env)
 
-class rcar(base.token):
-    symbol = 'rcar'
+class list_p(base.token):
+    symbol = 'list'
 
-    def eval(self, env, l):
-        return l.eval(env)[-1]
-
-class rcdr(base.token):
-    symbol = 'rcdr'
-
-    def eval(self, env, l):
-        return l.eval(env)[:-1]
-
-class rcons(base.token):
-    symbol = 'rcons'
-
-    def eval(self, env, a, b):
-        return b.eval(env) + base.tuple([a.eval(env)])
+    def eval(self, env, *l):
+        return base.tuple([i.eval(env) for i in l])

@@ -7,6 +7,32 @@ if __name__ == '__main__':
 
     dragon = open('dragon.scm', 'r').read()
     
+# (lambda (f a) (f f a))
+# (lambda (dragon i)
+#   (cond
+#    ((= i 0) '())
+#    (else
+#     ((lambda (f a c) (f f a c))
+#      (lambda (interp-rl d c)
+#        (cond
+#         ((null? d) '(r))
+#         ((= 1 (length d)) (cons c (rcons (if (equal? 'r c) 'l 'r) d)))
+#         (else
+#          (cons
+#           c
+#           (rcons
+#            (if (equal? 'r c) 'l 'r)
+#            (cons
+#             (car d)
+#             (rcons
+#              (rcar d)
+#              (interp-rl
+#               interp-rl
+#               (rcdr (cdr d))
+#               (if (equal? 'r c) 'l 'r)))))))))
+#      (dragon dragon (- i 1))
+#      'r))))
+
     #(define (rcar l) (cond ((= 1 (length l)) (car l)) (else (rcar (cdr l)))))
     #(define (rcdr l) (cond ((= 1 (length l)) '()) (else (cons (car l) (rcdr (cdr l))))))
     #(define (rcons v l) (cond ((null? l) (list v)) (else (cons (car l) (rcons v (cdr l))))))
