@@ -25,13 +25,21 @@ class lambda_i(base.token):
 
     def eval(self, env, *arg_values):
         if len(self.arg_labels) != len(arg_values):
-            raise Exception("number of labels (%r, %s) and values (%r, %s) does not match when calling %s" % (len(self.arg_labels), self.arg_labels, len(arg_values), arg_values, self))
+            raise Exception("number of labels (%r, %s) and values (%r, %s) does not match when calling %s"
+                            % (len(self.arg_labels),
+                               self.arg_labels,
+                               len(arg_values),
+                               arg_values, self))
         return let_t().eval(env,
-                            base.tuple([base.tuple([self.arg_labels[i], arg_values[i]]) for i in xrange(len(self.arg_labels))]),
+                            base.tuple(
+                                [base.tuple([self.arg_labels[i], arg_values[i]])
+                                 for i in xrange(len(self.arg_labels))]),
                             *self.exprs)
 
     def __str__(self):
-        return '(lambda %s %s %s)' % (self.name if self.name is not None else '<unnamed>', self.arg_labels, base.tuple(self.exprs))
+        return '(lambda %s %s %s)' % (
+            self.name if self.name is not None else '<unnamed>',
+            self.arg_labels, base.tuple(self.exprs))
 
 class named_lambda_t(base.token):
     symbol = 'named-lambda'

@@ -28,9 +28,7 @@ class cdr(base.token):
     symbol = 'cdr'
 
     def eval(self, env, l):
-        ret = l.eval(env)[1:]
-#        print "cdr: %s" % (ret,)
-        return ret
+        return l.eval(env)[1:]
 
 class cons(base.token):
     symbol = 'cons'

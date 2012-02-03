@@ -14,10 +14,7 @@ class tuple(token):
         self.value = value
 
     def eval(self, env):
-        ret = self.value[0].eval(env).eval(env, *self.value[1:])
-#        print "tuple.eval: %s" % (self,)
-#        print "ret: %s" % (ret,)
-        return ret
+        return self.value[0].eval(env).eval(env, *self.value[1:])
 
     def __str__(self):
         return '(%s)' % (' '.join([str(val) for val in self.value]),)
