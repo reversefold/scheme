@@ -13,21 +13,34 @@ class tuple(token):
     def __init__(self, value):
         self.value = value
 
-    def eval(self):
-        return self.value[0].eval(*self.value[1:])
+    def eval(self, env):
+        ret = self.value[0].eval(env).eval(env, *self.value[1:])
+#        print "tuple.eval: %s" % (self,)
+#        print "ret: %s" % (ret,)
+        return ret
 
     def __str__(self):
         return '(%s)' % (' '.join([str(val) for val in self.value]),)
 
+    # Proxy methods
     def __getitem__(self, key):
-        return self.value[key]
+        ret = self.value[key]
+        if isinstance(ret, list):
+            ret = tuple(ret)
+        return ret
+
+    def __len__(self):
+        return len(self.value)
+
+    def __add__(self, r):
+        return tuple(self.value + r.value)
 
 class quoted(token):
     def __init__(self, value):
         self.value = value
 
-    def eval(self):
-        return self
+    def eval(self, env):
+        return self.value
 
     def __str__(self):
         return str(self.value)
@@ -35,14 +48,14 @@ class quoted(token):
 class quote(token):
     symbol = 'quote'
 
-    def eval(self, l):
+    def eval(self, env, l):
         return quoted(l)
 
 class number(token):
     def __init__(self, value):
         self.value = fractions.Fraction(value)
 
-    def eval(self):
+    def eval(self, env):
         return self
 
     def __eq__(self, r):
@@ -90,7 +103,7 @@ class boolean(token):
             value = False
         self.value = value
 
-    def eval(self):
+    def eval(self, env):
         return self
 
     def __nonzero__(self):
@@ -103,12 +116,15 @@ class label(token):
     def __init__(self, value):
         self.value = value
 
-    def token(self):
+    def token(self, env):
         import scheme.parser.token
+        if self.value in env:
+            return env[self.value]
+        # TODO: no env in ()?
         return scheme.parser.token._map[self.value]()
 
-    def eval(self, *args):
-        return self.token().eval(*args)
+    def eval(self, env):
+        return self.token(env)
 
     def __str__(self):
         return self.value

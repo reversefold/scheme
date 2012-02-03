@@ -1,6 +1,7 @@
 from base import *
 from char import *
 from equivalency import *
+from lambda_exp import *
 from list import *
 from logic import *
 from operator import *

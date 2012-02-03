@@ -85,7 +85,7 @@ class SchemeParser(object):
         if value[:2] == 'U+':
             raise Exception("Unicode?")
 
-        raise Exception("Named char?")
+        return token.named_char(value)
 
     def _parse_string(self):
         value = []

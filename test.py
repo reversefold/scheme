@@ -1,6 +1,18 @@
 from scheme import Scheme
 from scheme.parser import SchemeParser
 
+dragon = open('dragon.scm', 'r').read()
+
+#(define (rcar l) (cond ((= 1 (length l)) (car l)) (else (rcar (cdr l)))))
+#(define (rcdr l) (cond ((= 1 (length l)) '()) (else (cons (car l) (rcdr (cdr l))))))
+#(define (rcons v l) (cond ((null? l) (list v)) (else (cons (car l) (rcons v (cdr l))))))
+
+# r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l
+#   r   r   l   r   r   l   l   r   r   r   l   l   r   l   l
+#       r       r       l       r       r       l       l
+#               r               r               l
+#                               r
+
 for expression, expected in [
         ('(+ 1 2)', '3'),
         ('(- 3 2)', '1'),
@@ -78,11 +90,11 @@ for expression, expected in [
       ((w y) 'semivowel)
       (else 'consonant))""", "consonant"),
         ('(quote (1 2 3))', "(1 2 3)"),
-        ('"I am a string"', 'I am a string'),
-        ('"\\""', '"'),
-        ('" escapism \\" escapism"', ' escapism " escapism'),
-        ('" esc \\\\ \\""', ' esc \\ "'),
-        ('(if (> 2 1) "2 > 1" "2 < 1")', '2 > 1'),
+        ('"I am a string"', '"I am a string"'),
+        ('"\\""', '"\\""'),
+        ('" escapism \\" escapism"', '" escapism \\" escapism"'),
+        ('" esc \\\\ \\""', '" esc \\\\ \\""'),
+        ('(if (> 2 1) "2 > 1" "2 < 1")', '"2 > 1"'),
         ('#\\a', '#\\a'),
         ('#\\A', '#\\A'),
         ('#\\(', '#\\('),
@@ -91,13 +103,74 @@ for expression, expected in [
         ('(eq? (string #\\space) " ")', '#f'),
         ('(eqv? (string #\\space) " ")', '#f'),
         ('(equal? (string #\\space) " ")', '#t'),
+
+        ("""
+(let ((x 1) (y 3))
+     x
+     y)""", '3'),
+        ("""
+(let ((x 1) (y 3))
+     y
+     x)""", '1'),
+        ("""
+(let ((x 1) (y 3))
+     (+ x y))""", '4'),
+
+        ("""
+((lambda (f a) (f f a))
+ (lambda (self x)
+  (cond
+   ((= x 0) x)
+   (else (+ x (self self (- x 1))))))
+ 5)""", '15'),
+
+        ("""
+((named-lambda (y f a) (f f a))
+ (named-lambda (ff self x)
+  (cond
+   ((= x 0) x)
+   (else (+ x (self self (- x 1))))))
+ 5)""", '15'),
+
+        ("""
+(%s 0)""" % (dragon,), '()'),
+
+        ("""
+(%s 1)""" % (dragon,), '(r)'),
+
+        ("""
+(%s 2)""" % (dragon,), '(r r l)'),
+
+        ("""
+(%s 3)""" % (dragon,), '(r r l r r l l)'),
+
+        ("""
+(%s 4)""" % (dragon,), '(r r l r r l l r r r l l r l l)'),
+
         ]:
 
-    token = SchemeParser(expression).parse()
-    s = Scheme(token)
-    result = s.eval()
-    if str(result) != expected:
+    token = None
+    result = None
+    ex = None
+    try:
+        token = SchemeParser(expression).parse()
+        s = Scheme(token)
+        result = s.eval()
+        if str(result) != expected:
+             raise Exception("Test failed")
+    except Exception, e:
+        ex = e
+
+    if ex:
         print "Input:    %s" % (expression,)
         print "Token:    %s" % (token,)
         print "Value:    %s" % (result,)
-        print "Expected: %s\n" % (expected,)
+        print "Expected: %s" % (expected,)
+        if ex:
+            if ex.args[0] == "Test failed":
+                print "Test failed"
+            else:
+                import sys
+                import traceback
+                traceback.print_exception(*sys.exc_info(), file=sys.stdout)
+        print

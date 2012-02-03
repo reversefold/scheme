@@ -1,3 +1,4 @@
+from scheme.environment import environment
 from scheme.parser import SchemeParser
 from scheme.parser import token
 
@@ -11,4 +12,5 @@ class Scheme(object):
             self.token = SchemeParser(arg).parse()
 
     def eval(self):
-        return self.token.eval()
+        env = environment()
+        return self.token.eval(env)
