@@ -1,19 +1,14 @@
 from scheme import Scheme
 from scheme.parser import SchemeParser
 import sys
-
-if __name__ == '__main__':
-    verbose = len(sys.argv) > 1 and sys.argv[1] == '-v'
-
-    dragon = open('dragon.scm', 'r').read()
     
-# (lambda (f a) (f f a))
-# (lambda (dragon i)
+#(lambda (dragon rcons i) (dragon dragon rcons i))
+# (lambda (dragon rcons i)
 #   (cond
 #    ((= i 0) '())
 #    (else
-#     ((lambda (f a c) (f f a c))
-#      (lambda (interp-rl d c)
+#     ((lambda (interp-rl rcons d c) (interp-rl interp-rl rcons d c))
+#      (lambda (interp-rl rcons d c)
 #        (cond
 #         ((null? d) '(r))
 #         ((= 1 (length d)) (cons c (rcons (if (equal? 'r c) 'l 'r) d)))
@@ -25,23 +20,31 @@ if __name__ == '__main__':
 #            (cons
 #             (car d)
 #             (rcons
-#              (rcar d)
+#              ((lambda (f a) (f f a)) (lambda (rcar l) (cond ((= 1 (length l)) (car l)) (else (rcar rcar (cdr l))))) d)
 #              (interp-rl
 #               interp-rl
-#               (rcdr (cdr d))
+#               rcons
+#               ((lambda (f a) (f f a)) (lambda (rcdr l) (cond ((= 1 (length l)) '()) (else (cons (car l) (rcdr rcdr (cdr l)))))) (cdr d))
 #               (if (equal? 'r c) 'l 'r)))))))))
-#      (dragon dragon (- i 1))
+#      rcons
+#      (dragon dragon rcons (- i 1))
 #      'r))))
+# (lambda (v l) ((lambda (rcons v l) (rcons rcons v l)) (lambda (rcons v l) (cond ((null? l) (list v)) (else (cons (car l) (rcons rcons v (cdr l)))))) v l))
 
-    #(define (rcar l) (cond ((= 1 (length l)) (car l)) (else (rcar (cdr l)))))
-    #(define (rcdr l) (cond ((= 1 (length l)) '()) (else (cons (car l) (rcdr (cdr l))))))
-    #(define (rcons v l) (cond ((null? l) (list v)) (else (cons (car l) (rcons v (cdr l))))))
-    
-    # r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l
-    #   r   r   l   r   r   l   l   r   r   r   l   l   r   l   l
-    #       r       r       l       r       r       l       l
-    #               r               r               l
-    #                               r
+#(define (rcar l) (cond ((= 1 (length l)) (car l)) (else (rcar (cdr l)))))
+#(define (rcdr l) (cond ((= 1 (length l)) '()) (else (cons (car l) (rcdr (cdr l))))))
+#(define (rcons v l) (cond ((null? l) (list v)) (else (cons (car l) (rcons v (cdr l))))))
+
+# r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l
+#   r   r   l   r   r   l   l   r   r   r   l   l   r   l   l
+#       r       r       l       r       r       l       l
+#               r               r               l
+#                               r
+
+if __name__ == '__main__':
+    verbose = len(sys.argv) > 1 and sys.argv[1] == '-v'
+
+    dragon = open('dragon.scm', 'r').read()
     
     for expression, expected in [
             ('(+ 1 2)', '3'),
@@ -161,25 +164,28 @@ if __name__ == '__main__':
    ((= x 0) x)
    (else (+ x (self self (- x 1))))))
  5)""", '15'),
-    
+
             ("""
 (%s 0)""" % (dragon,), '()'),
-    
+
             ("""
 (%s 1)""" % (dragon,), '(r)'),
-    
+
             ("""
 (%s 2)""" % (dragon,), '(r r l)'),
-    
+
             ("""
 (%s 3)""" % (dragon,), '(r r l r r l l)'),
-    
+
             ("""
 (%s 4)""" % (dragon,), '(r r l r r l l r r r l l r l l)'),
 
             ("""
 (%s 7)""" % (dragon,), '(r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l)'),
-    
+
+            ("""
+(%s 8)""" % (dragon,), '(r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l)'),
+
             ]:
     
         token = None
