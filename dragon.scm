@@ -1,4 +1,4 @@
- (lambda (dragon rcons i) (dragon dragon rcons i))
+(lambda (dragon rcons i) (dragon dragon rcons i))
  (lambda (dragon rcons i)
    (cond
     ((= i 0) '())

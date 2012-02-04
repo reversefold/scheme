@@ -72,19 +72,19 @@ if __name__ == '__main__':
             ("(if (> 1 3) (+ 1 3) (- 1 3))", '-2'),
     
             ("""
-    (cond ((> 3 2) 'greater)
-          ((< 3 2) 'less))""", "greater"),
+(cond ((> 3 2) 'greater)
+      ((< 3 2) 'less))""", "greater"),
             ("""
-    (cond ((> 2 3) 'greater)
-          ((< 2 3) 'less))""", "less"),
+(cond ((> 2 3) 'greater)
+      ((< 2 3) 'less))""", "less"),
             ("""
-    (cond ((> 3 3) 'greater)
-          ((< 3 3) 'less)
-          (else 'equal))""", "equal"),
+(cond ((> 3 3) 'greater)
+      ((< 3 3) 'less)
+      (else 'equal))""", "equal"),
             ("""
-    (cond (#f 1)
-          (#t 2)
-          (#t 3))""", '2'),
+(cond (#f 1)
+      (#t 2)
+      (#t 3))""", '2'),
     
             ("(* 1 1)", '1'),
             ("(* 5 7)", '35'),
@@ -107,18 +107,18 @@ if __name__ == '__main__':
             ("(or (> 3 1) (> 1 3))", '#t'),
     
             ("""
-    (case (* 2 3)
-          ((2 3 5 7) 'prime)
-          ((1 4 6 8 9) 'composite))""", "composite"),
+(case (* 2 3)
+      ((2 3 5 7) 'prime)
+      ((1 4 6 8 9) 'composite))""", "composite"),
             ("""
-    (case (car '(c d))
-          ((a) 'a)
-          ((b) 'b))""", 'None'),
+(case (car '(c d))
+      ((a) 'a)
+      ((b) 'b))""", 'None'),
             ("""
-    (case (car '(c d))
-          ((a e i o u) 'vowel)
-          ((w y) 'semivowel)
-          (else 'consonant))""", "consonant"),
+(case (car '(c d))
+      ((a e i o u) 'vowel)
+      ((w y) 'semivowel)
+      (else 'consonant))""", "consonant"),
             ('(quote (1 2 3))', "(1 2 3)"),
             ('"I am a string"', '"I am a string"'),
             ('"\\""', '"\\""'),
@@ -135,47 +135,50 @@ if __name__ == '__main__':
             ('(equal? (string #\\space) " ")', '#t'),
     
             ("""
-    (let ((x 1) (y 3))
-         x
-         y)""", '3'),
+(let ((x 1) (y 3))
+     x
+     y)""", '3'),
             ("""
-    (let ((x 1) (y 3))
-         y
-         x)""", '1'),
+(let ((x 1) (y 3))
+     y
+     x)""", '1'),
             ("""
-    (let ((x 1) (y 3))
-         (+ x y))""", '4'),
+(let ((x 1) (y 3))
+     (+ x y))""", '4'),
     
             ("""
-    ((lambda (f a) (f f a))
-     (lambda (self x)
-      (cond
-       ((= x 0) x)
-       (else (+ x (self self (- x 1))))))
-     5)""", '15'),
+((lambda (f a) (f f a))
+ (lambda (self x)
+  (cond
+   ((= x 0) x)
+   (else (+ x (self self (- x 1))))))
+ 5)""", '15'),
     
             ("""
-    ((named-lambda (y f a) (f f a))
-     (named-lambda (ff self x)
-      (cond
-       ((= x 0) x)
-       (else (+ x (self self (- x 1))))))
-     5)""", '15'),
+((named-lambda (y f a) (f f a))
+ (named-lambda (ff self x)
+  (cond
+   ((= x 0) x)
+   (else (+ x (self self (- x 1))))))
+ 5)""", '15'),
     
             ("""
-    (%s 0)""" % (dragon,), '()'),
+(%s 0)""" % (dragon,), '()'),
     
             ("""
-    (%s 1)""" % (dragon,), '(r)'),
+(%s 1)""" % (dragon,), '(r)'),
     
             ("""
-    (%s 2)""" % (dragon,), '(r r l)'),
+(%s 2)""" % (dragon,), '(r r l)'),
     
             ("""
-    (%s 3)""" % (dragon,), '(r r l r r l l)'),
+(%s 3)""" % (dragon,), '(r r l r r l l)'),
     
             ("""
-    (%s 4)""" % (dragon,), '(r r l r r l l r r r l l r l l)'),
+(%s 4)""" % (dragon,), '(r r l r r l l r r r l l r l l)'),
+
+            ("""
+(%s 7)""" % (dragon,), '(r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l)'),
     
             ]:
     
