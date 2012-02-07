@@ -24,7 +24,7 @@ class environment(object):
         self.dict[key] = value
 
     def __contains__(self, item):
-        return item in self.dict
+        return item in self.cache or item in self.dict or (self.parent and item in self.parent)
 
     def __str__(self):
         return str(self.flattened())
