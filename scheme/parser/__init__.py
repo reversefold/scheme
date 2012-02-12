@@ -74,6 +74,8 @@ class SchemeParser(object):
         if value[1] == '\\':
             return self._parse_char(value[2:])
 
+        raise Exception("How do I parse %r" % (value,))
+
     def _parse_char(self, value):
         l = len(value)
         if l == 0:
@@ -83,7 +85,8 @@ class SchemeParser(object):
             return token.char_t(value)
 
         if value[:2] == 'U+':
-            raise Exception("Unicode?")
+            num = int(value[2:], 16)
+            return token.char_u(num)
 
         return token.named_char(value)
 

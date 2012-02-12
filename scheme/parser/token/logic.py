@@ -130,16 +130,28 @@ class case(base.token):
                 return [j.eval(env) for j in i[1:]][-1]
         # TODO: what if no condition is satisfied? (unspecified?)
 
+    @staticmethod
+    def case_ceval(k, env, v, l):
+        if not l:
+            return base.Bounce(k, None)
+        i = l[0]
+        if isinstance(i[0], else_t):
+            return base.Bounce(base.return_last, k, env, i[1:])
+        if isinstance(i[0], base.label):
+            def with_token(token):
+                if isinstance(token, else_t):
+                    return base.Bounce(base.return_last, k, env, i[1:])
+                else:
+                    return base.Bounce(case.case_ceval, k, env, v, l[1:])
+            return base.Bounce(i[0].ctoken, with_token, env)
+        for iv in i[0]:
+            if equivalency.eqv.eval(env, v, iv):
+                return base.Bounce(base.return_last, k, env, i[1:])
+        return base.Bounce(case.case_ceval, k, env, v, l[1:])
 
     @staticmethod
     def ceval(k, env, *l):
         p = l[0]
         def with_val(v):
-            for i in l[1:]:
-                if isinstance(i[0], else_t) or isinstance(i[0], base.label) and isinstance(i[0].token(env), else_t):
-                    return base.Bounce(base.return_last, k, env, i[1:])
-                for iv in i[0]:
-                    if equivalency.eqv.eval(env, v, iv):
-                        return base.Bounce(base.return_last, k, env, i[1:])
-            return base.Bounce(k, None)
+            return base.Bounce(case.case_ceval, k, env, v, l[1:])
         return base.Bounce(p.ceval, with_val, env)

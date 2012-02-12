@@ -2,16 +2,7 @@ from __future__ import division
 
 import fractions
 
-
-class Bounce:
-    def __init__(self, func, *args, **kwargs):
-        self.__call__ = lambda: func(*args, **kwargs)
-
-def trampoline(value):
-    while isinstance(value, Bounce):
-        value = value()
-    return value
-
+from scheme.trampoline import *
 
 class token(object):
     def __str__(self):
@@ -30,6 +21,7 @@ class tuple(token):
     def ceval(self, k, env):
         def with_func(f):
             return Bounce(f.ceval, k, env, *self.value[1:])
+#        print self
         return Bounce(self.value[0].ceval, with_func, env)
 
     def __str__(self):
@@ -164,17 +156,16 @@ class label(token):
         self.value = value
 
     def token(self, env):
-        import scheme.parser.token
-        if self.value in env:
-            return env[self.value]
-        # TODO: no env in ()?
-        return scheme.parser.token._map[self.value]()
+        return env[self.value]
+
+    def ctoken(self, k, env):
+        return Bounce(env.cget, k, self.value)
 
     def eval(self, env):
         return self.token(env)
 
     def ceval(self, k, env):
-        return Bounce(k, self.token(env))
+        return Bounce(self.ctoken, k, env)
 
     def __str__(self):
         return self.value

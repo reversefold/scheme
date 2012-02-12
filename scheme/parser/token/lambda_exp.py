@@ -23,11 +23,33 @@ class let_t(base.token):
             return base.Bounce(let_t._ceval_env, k, env, var_list[1:])
         return base.Bounce(var_list[0][1].ceval, with_val, env)
 
+    _cache = {}
+
     @staticmethod
     def ceval(k, env, var_list, *exprs):
         subenv = environment(env)
         def with_env():
-            return base.Bounce(base.return_last, k, subenv, exprs)
+#            def with_flattened_env(flat):
+                # TODO: only want the values in var_list, not env()
+                #   Actually, only want those values that will be used in the lambda....but the var_list should work for now
+                #    Not sure if the outer scope applies the same to lambdas in the spec
+#                key = str(base.tuple([base.tuple([base.tuple([name, value]) for name, value in flat.items()]), base.tuple(exprs)]))
+#                print "(\n %s\n)\n%s" % ("\n ".join(
+#                    [str(base.tuple([name, value])) for name, value in flat.items()]), base.tuple(exprs))
+                key = "(\n %s\n)\n%s" % (
+                    "\n ".join(
+                        [str(base.tuple([name, subenv[name.value]])) for name, expr in var_list]),
+                    base.tuple(exprs))
+                #print key
+                if key in let_t._cache:
+#                    print "cache win for:\n%s" % (key,)
+                    #print "cached value %s for %s" % (let_t._cache[key], key)
+                    return base.Bounce(k, let_t._cache[key])
+                def with_value(v):
+                    let_t._cache[key] = v
+                    return base.Bounce(k, v)
+                return base.Bounce(base.return_last, with_value, subenv, exprs)
+#            return base.Bounce(subenv.cflattened, with_flattened_env)
         return base.Bounce(let_t._ceval_env, with_env, subenv, var_list)
 
 class lambda_t(base.token):

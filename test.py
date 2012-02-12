@@ -54,6 +54,18 @@ expressions = [
 
     ('(+ 1 2)', '3'),
     ('(- 3 2)', '1'),
+    ("(* 1 1)", '1'),
+    ("(* 5 7)", '35'),
+    ("(/ 1 1)", '1'),
+    ("(/ 1 2)", '1/2'),
+    ("(/ 42 2)", '21'),
+
+
+    ("(> 1 3)", '#f'),
+    ("(> 3 1)", '#t'),
+    ("(< 1 3)", '#t'),
+    ("(< 3 1)", '#f'),
+
     ("(car '(1 2 3))", '1'),
     ("(cdr '(1 2 3))", '(2 3)'),
     ("(car (cdr '(1 2 3)))", '2'),
@@ -61,11 +73,6 @@ expressions = [
     ("(cons (+ 1 (- 3 (+ 15 34))) '(4 5))", '(-45 4 5)'),
     ("(cons (+ 1 (- 3 (+ 15 34))) '(4 (+ 4 5)))", '(-45 4 (+ 4 5))'),
     ("(cons (car '(1 2 3)) (cdr '(4 5 6)))", "(1 5 6)"),
-
-    ("(> 1 3)", '#f'),
-    ("(> 3 1)", '#t'),
-    ("(< 1 3)", '#t'),
-    ("(< 3 1)", '#f'),
     
     ("(and #t #t)", '#t'),
     ("(and #t #f)", '#f'),
@@ -80,6 +87,12 @@ expressions = [
     ("(or #f #f)", '#f'),
     ("(or (> 3 1) (< 1 3))", '#t'),
     ("(or (> 3 1) (> 1 3))", '#t'),
+
+    ('#\\a', '#\\a'),
+    ('#\\A', '#\\A'),
+    ('#\\(', '#\\('),
+    ('#\\space', '#\\space'),
+    ('#\\U+61', '#\\a'),
 
     ("(if #t 'y 'n)", "y"),
     ("(if #f 'y 'n)", "n"),
@@ -104,13 +117,7 @@ expressions = [
 (cond (#f 1)
       (#t 2)
       (#t 3))""", '2'),
-    
-    ("(* 1 1)", '1'),
-    ("(* 5 7)", '35'),
-    ("(/ 1 1)", '1'),
-    ("(/ 1 2)", '1/2'),
-    ("(/ 42 2)", '21'),
-    
+
     ("""
 (case (* 2 3)
       ((2 3 5 7) 'prime)
@@ -124,6 +131,17 @@ expressions = [
       ((a e i o u) 'vowel)
       ((w y) 'semivowel)
       (else 'consonant))""", "consonant"),
+    ("""
+(case (car '(c d))
+      ((a e i o u) 'vowel)
+      ((w y) 'semivowel)
+      (else (+ 1 2) (- 3 1) 'consonant))""", "consonant"),
+    ("""
+(case (car '(i d))
+      ((a e i o u) (* 7 17) (/ 1 5) 'vowel)
+      ((w y) 'semivowel)
+      (else 'consonant))""", "vowel"),
+
     ('(quote (1 2 3))', "'(1 2 3)"),
     ('"I am a string"', '"I am a string"'),
     ('(string=? "I am a string" "I am a string")', '#t'),
@@ -132,15 +150,11 @@ expressions = [
     ('" escapism \\" escapism"', '" escapism \\" escapism"'),
     ('" esc \\\\ \\""', '" esc \\\\ \\""'),
     ('(if (> 2 1) "2 > 1" "2 < 1")', '"2 > 1"'),
-    ('#\\a', '#\\a'),
-    ('#\\A', '#\\A'),
-    ('#\\(', '#\\('),
-    ('#\\space', '#\\space'),
     ('(string #\\space)', '" "'),
     ('(eq? (string #\\space) " ")', '#f'),
     ('(eqv? (string #\\space) " ")', '#f'),
     ('(equal? (string #\\space) " ")', '#t'),
-    
+
     ("""
 (let ((x 1) (y 3))
      x
@@ -190,8 +204,8 @@ expressions = [
     ("""
 (%s 8)""" % (dragon,), '(r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l)'),
 
-    ("""
-(%s 10)""" % (dragon,), '(r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l)'),
+#    ("""
+#(%s 10)""" % (dragon,), '(r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l)'),
 
     ("""
 (%s 12)""" % (dragon,), '(r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l r r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l r r r l r r l l l r r l l r l l l r r l r r l l r r r l l r l l l r r l r r l l l r r l l r l l)'),
@@ -202,7 +216,7 @@ if __name__ == '__main__':
     verbose = len(sys.argv) > 1 and sys.argv[1] == '-v'
 
     for eval_func in [
-            'eval',
+#            'eval',
             'ceval'
     ]:
         for expression, expected in expressions:
