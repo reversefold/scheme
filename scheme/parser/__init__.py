@@ -1,4 +1,5 @@
 from scheme.parser import token
+from scheme.trampoline import Bounce
 
 class SchemeParser(object):
     _white = [
@@ -22,7 +23,7 @@ class SchemeParser(object):
         """
         Parses the txt passed into __init__.
 
-        Only parses a single token at a time, calls itself recursively. After a single token is parsed, this function returns.
+        Parses a single token (including subtokens) at a time, calls itself recursively.
         """
 
         self._eat_white()
@@ -47,6 +48,44 @@ class SchemeParser(object):
         value = self._parse_value()
 
         return token.label(value)
+
+    def _clist(self, k):
+        # needed in case there is whitespace before the )
+        self._eat_white()
+        if self.txt[0] == ')':
+            self.txt = self.txt[1:]
+            return Bounce(k, token.tuple([]))
+        def with_val(v):
+            def with_list(l):
+                return Bounce(k, token.tuple([v]) + l)
+            return Bounce(self._clist, with_list)
+        return Bounce(self.cparse, with_val)
+
+    def cparse(self, k):
+        """
+        Parses the txt passed into __init__.
+
+        Parses a single token (including subtokens) at a time, calls itself recursively.
+        """
+
+        self._eat_white()
+        c = self.txt[0]
+        if c == '(':
+            self.txt = self.txt[1:]
+            return Bounce(self._clist, k)
+
+        elif c == "'":
+            self.txt = self.txt[1:]
+            def with_quoted(quoted):
+                return Bounce(k, token.quoted(quoted))
+            return Bounce(self.cparse, with_quoted)
+
+        if self.txt[0] in self._map:
+            return Bounce(k, getattr(self, SchemeParser._map[self.txt[0]])())
+
+        value = self._parse_value()
+
+        return Bounce(k, token.label(value))
 
     def _parse_value(self):
         i = 0

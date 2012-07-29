@@ -2,7 +2,7 @@ from __future__ import division
 
 import fractions
 
-from scheme.trampoline import *
+from scheme.trampoline import Bounce
 
 class token(object):
     def __str__(self):

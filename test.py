@@ -1,5 +1,6 @@
 from scheme import Scheme
 from scheme.parser import SchemeParser
+from scheme.trampoline import trampoline
 import sys
 
 #(lambda (dragon rcons i) (dragon dragon rcons i))
@@ -229,7 +230,7 @@ if __name__ == '__main__':
             result = None
             ex = None
             try:
-                token = SchemeParser(expression).parse()
+                token = trampoline(SchemeParser(expression).cparse(lambda x: x))
                 s = Scheme(token)
                 result = getattr(s, eval_func)()
                 if str(result) != expected:
