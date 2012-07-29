@@ -1,7 +1,7 @@
 from scheme import Scheme
 from scheme.parser import SchemeParser
 import sys
-    
+
 #(lambda (dragon rcons i) (dragon dragon rcons i))
 # (lambda (dragon rcons i)
 #   (cond
@@ -46,6 +46,10 @@ dragon = open('dragon.scm', 'r').read()
 expressions = [
     ('3', '3'),
 
+    ('(list 2 3)', '(2 3)'),
+    ('(list 2 3 1 4 7 42)', '(2 3 1 4 7 42)'),
+    ('(list 2 (list 7 6) 3)', '(2 (7 6) 3)'),
+
     ("#t", '#t'),
     ("#f", '#f'),
     ('(quote #t)', '#t'),
@@ -73,14 +77,14 @@ expressions = [
     ("(cons (+ 1 (- 3 (+ 15 34))) '(4 5))", '(-45 4 5)'),
     ("(cons (+ 1 (- 3 (+ 15 34))) '(4 (+ 4 5)))", '(-45 4 (+ 4 5))'),
     ("(cons (car '(1 2 3)) (cdr '(4 5 6)))", "(1 5 6)"),
-    
+
     ("(and #t #t)", '#t'),
     ("(and #t #f)", '#f'),
     ("(and #f #t)", '#f'),
     ("(and #f #f)", '#f'),
     ("(and (> 3 1) (< 1 3))", '#t'),
     ("(and (> 3 1) (> 1 3))", '#f'),
-    
+
     ("(or #t #t)", '#t'),
     ("(or #t #f)", '#t'),
     ("(or #f #t)", '#t'),
@@ -166,7 +170,7 @@ expressions = [
     ("""
 (let ((x 1) (y 3))
      (+ x y))""", '4'),
-    
+
     ("""
 ((lambda (f a) (f f a))
  (lambda (self x)
@@ -174,7 +178,7 @@ expressions = [
    ((= x 0) x)
    (else (+ x (self self (- x 1))))))
  5)""", '15'),
-    
+
     ("""
 ((named-lambda (y f a) (f f a))
  (named-lambda (ff self x)
@@ -220,7 +224,7 @@ if __name__ == '__main__':
             'ceval'
     ]:
         for expression, expected in expressions:
-        
+
             token = None
             result = None
             ex = None
@@ -232,7 +236,7 @@ if __name__ == '__main__':
                      raise Exception("Test failed")
             except Exception, e:
                 ex = e
-        
+
             if verbose or ex:
                 print "Input:    %s" % (expression,)
                 print "Token:    %s" % (token,)
