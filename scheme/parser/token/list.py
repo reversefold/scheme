@@ -74,14 +74,10 @@ class list_p(base.token):
     def ceval(k, env, *l):
         if not l:
             return base.Bounce(k, base.tuple([]))
-        vals = []
         def with_val(v):
-            vals.append(v)
-            if l:
-                i = l[0]
-                l = l[1:]
-                return base.Bounce(i.ceval, with_val, env)
-            return base.Bounce(k, base.tuple(vals))
-        i = l[0]
-        l = l[1:]
-        return base.Bounce(i.ceval, with_val, env)
+            if len(l) == 1:
+                return base.Bounce(k, base.tuple([v]))
+            def with_list(ll):
+                return base.Bounce(k, base.tuple([v]) + ll)
+            return base.Bounce(list_p.ceval, with_list, env, *l[1:])
+        return base.Bounce(l[0].ceval, with_val, env)
