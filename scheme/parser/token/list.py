@@ -22,6 +22,12 @@ class length(base.token):
     def eval(env, l):
         return base.number(len(l.eval(env)))
 
+    @staticmethod
+    def ceval(k, env, l):
+        def with_val(val):
+            return base.Bounce(k, len(val))
+        return base.Bounce(l.ceval, with_val, env)
+
 class car(base.token):
     symbol = 'car'
 
@@ -74,10 +80,11 @@ class list_p(base.token):
     def ceval(k, env, *l):
         if not l:
             return base.Bounce(k, base.tuple([]))
+        l = list(l)
+        vals = []
         def with_val(v):
-            if len(l) == 1:
-                return base.Bounce(k, base.tuple([v]))
-            def with_list(ll):
-                return base.Bounce(k, base.tuple([v]) + ll)
-            return base.Bounce(list_p.ceval, with_list, env, *l[1:])
-        return base.Bounce(l[0].ceval, with_val, env)
+            vals.append(v)
+            if l:
+                return base.Bounce(l.pop(0).ceval, with_val, env)
+            return base.Bounce(k, base.tuple(vals))
+        return base.Bounce(l.pop(0).ceval, with_val, env)
