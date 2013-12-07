@@ -25,7 +25,7 @@ class length(base.token):
     @staticmethod
     def ceval(k, env, l):
         def with_val(val):
-            return base.Bounce(k, len(val))
+            return base.Bounce(k, base.number(len(val)))
         return base.Bounce(l.ceval, with_val, env)
 
 class car(base.token):
