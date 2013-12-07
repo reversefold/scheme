@@ -76,7 +76,7 @@ class lambda_i(base.token):
                                self.arg_labels,
                                len(arg_values),
                                arg_values, self))
-        return let_t().eval(
+        return let_t.eval(
             env,
             base.tuple(
                 [base.tuple([self.arg_labels[i], arg_values[i]])
@@ -90,7 +90,7 @@ class lambda_i(base.token):
                                self.arg_labels,
                                len(arg_values),
                                arg_values, self))
-        return base.Bounce(let_t().ceval, k,
+        return base.Bounce(let_t.ceval, k,
             env,
             base.tuple(
                 [base.tuple([self.arg_labels[i], arg_values[i]])
