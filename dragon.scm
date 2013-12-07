@@ -10,6 +10,10 @@
          (cond
           ((null? d) (list))
           (else
-           (cons (car d) (interp-rl interp-rl (if (equal? c 'r) 'l 'r) (cdr d)))))))
+           (cons
+            (car d)
+            (interp-rl interp-rl
+                       (if (equal? c 'r) 'l 'r)
+                       (cdr d)))))))
       'r
       (dragon dragon (- i 1))))))
