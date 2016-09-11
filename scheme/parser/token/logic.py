@@ -1,5 +1,6 @@
 from scheme.parser.token import base, equivalency
 
+
 class and_t(base.token):
     symbol = 'and'
 
@@ -22,6 +23,7 @@ class and_t(base.token):
 #            return base.Bounce(k, base.boolean(True))
         p = l[0]
 #        ll = {'l': l[1:]}
+
         def with_val(v):
 #            l = ll['l']
             if not v or len(l) == 1:
@@ -31,6 +33,7 @@ class and_t(base.token):
 #            return base.Bounce(p.ceval, with_val, env)
             return base.Bounce(and_t.ceval, k, env, *l[1:])
         return base.Bounce(p.ceval, with_val, env)
+
 
 class or_t(base.token):
     symbol = 'or'
@@ -48,11 +51,13 @@ class or_t(base.token):
     @staticmethod
     def ceval(k, env, *l):
         p = l[0]
+
         def with_val(v):
             if v or len(l) == 1:
                 return base.Bounce(k, v)
             return base.Bounce(or_t.ceval, k, env, *l[1:])
         return base.Bounce(p.ceval, with_val, env)
+
 
 class if_t(base.token):
     symbol = 'if'
@@ -73,6 +78,7 @@ class if_t(base.token):
                 return base.Bounce(f.ceval, k, env)
         return base.Bounce(cond.ceval, with_val, env)
 
+
 class cond(base.token):
     symbol = 'cond'
 
@@ -89,6 +95,7 @@ class cond(base.token):
     @staticmethod
     def ceval(k, env, *l):
         p = l[0][0]
+
         def with_val(v):
             if v:
                 if len(l[0]) == 1:
@@ -101,12 +108,14 @@ class cond(base.token):
             return base.Bounce(cond.ceval, k, env, *l[1:])
         return base.Bounce(p.ceval, with_val, env)
 
+
 class else_t(base.token):
     symbol = 'else'
 
 #    @staticmethod
 #    def eval(env):
 #        return True
+
 
 class case(base.token):
     symbol = 'case'
@@ -152,6 +161,7 @@ class case(base.token):
     @staticmethod
     def ceval(k, env, *l):
         p = l[0]
+
         def with_val(v):
             return base.Bounce(case.case_ceval, k, env, v, l[1:])
         return base.Bounce(p.ceval, with_val, env)

@@ -1,5 +1,6 @@
 from scheme.parser.token import base, char
 
+
 class string_t(base.token):
     def __init__(self, value):
         self.value = value
@@ -23,6 +24,7 @@ class string_t(base.token):
         # TODO: assumption that b is a string_t instance
         return base.boolean(self.value == b.value)
 
+
 class string_f(base.token):
     symbol = 'string'
 
@@ -36,6 +38,7 @@ class string_f(base.token):
             # TODO: assumption that i is a char_t
             return base.Bounce(k, string_t(''.join([i.value for i in v])))
         return base.Bounce(base.resolve_list, with_val, env, lst)
+
 
 class string_eq(base.token):
     symbol = 'string=?'

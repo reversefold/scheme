@@ -257,7 +257,7 @@ if __name__ == '__main__':
                 s = Scheme(token)
                 result = getattr(s, eval_func)()
                 if str(result) != expected:
-                     raise Exception("Test failed")
+                    raise Exception("Test failed")
             except Exception, e:
                 ex = e
 

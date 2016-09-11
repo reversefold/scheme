@@ -1,6 +1,7 @@
 from scheme.environment import environment
 from scheme.parser.token import base
 
+
 class let_t(base.token):
     symbol = 'let'
 
@@ -15,8 +16,8 @@ class let_t(base.token):
     @staticmethod
     def _ceval_env(k, env, var_list):
         def with_val(v):
-            #TODO: assumption that name is a label
-#            print "let %s = %r" % (var_list[0][0].value, v)
+            # TODO: assumption that name is a label
+            # print "let %s = %r" % (var_list[0][0].value, v)
             env[var_list[0][0].value] = v
             if len(var_list) == 1:
                 return base.Bounce(k)
@@ -40,17 +41,19 @@ class let_t(base.token):
                     "\n ".join(
                         [str(base.tuple([name, subenv[name.value]])) for name, expr in var_list]),
                     base.tuple(exprs))
-                #print key
+                # print key
                 if key in let_t._cache:
-#                    print "cache win for:\n%s" % (key,)
-                    #print "cached value %s for %s" % (let_t._cache[key], key)
+                    # print "cache win for:\n%s" % (key,)
+                    # print "cached value %s for %s" % (let_t._cache[key], key)
                     return base.Bounce(k, let_t._cache[key])
+
                 def with_value(v):
                     let_t._cache[key] = v
                     return base.Bounce(k, v)
                 return base.Bounce(base.return_last, with_value, subenv, exprs)
 #            return base.Bounce(subenv.cflattened, with_flattened_env)
         return base.Bounce(let_t._ceval_env, with_env, subenv, var_list)
+
 
 class lambda_t(base.token):
     symbol = 'lambda'
@@ -62,6 +65,7 @@ class lambda_t(base.token):
     @staticmethod
     def ceval(k, env, arg_labels, *exprs):
         return base.Bounce(k, lambda_i(env, arg_labels, exprs))
+
 
 class lambda_i(base.token):
     def __init__(self, env, arg_labels, exprs, name=None):
@@ -90,17 +94,21 @@ class lambda_i(base.token):
                                self.arg_labels,
                                len(arg_values),
                                arg_values, self))
-        return base.Bounce(let_t.ceval, k,
+        return base.Bounce(
+            let_t.ceval, k,
             env,
             base.tuple(
                 [base.tuple([self.arg_labels[i], arg_values[i]])
-                 for i in xrange(len(self.arg_labels))]),
-            *self.exprs)
+                 for i in xrange(len(self.arg_labels))]
+            ),
+            *self.exprs
+        )
 
     def __str__(self):
         return '(lambda %s %s %s)' % (
             self.name if self.name is not None else '<unnamed>',
             self.arg_labels, base.tuple(self.exprs))
+
 
 class named_lambda_t(base.token):
     symbol = 'named-lambda'

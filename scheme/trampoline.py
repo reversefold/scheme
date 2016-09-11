@@ -1,11 +1,12 @@
 # Borrowed from Davy Wybiral at http://knol.google.com/k/davy-wybiral/trampolining-in-python/23oi5sywhe2tp/2#
 
+
 class Bounce(object):
     def __init__(self, func, *args, **kwargs):
         self.func = func
         self.args = args
         self.kwargs = kwargs
-        #self.__call__ = lambda: func(*args, **kwargs)
+        # self.__call__ = lambda: func(*args, **kwargs)
 
     def __call__(self):
         return self.func(*self.args, **self.kwargs)
@@ -21,7 +22,7 @@ class CountedBounce(Bounce):
 
     def __call__(self):
         CountedBounce.c += 1
-#        print "%r %r %r" % (self.func, self.args, self.kwargs)
+        # print "%r %r %r" % (self.func, self.args, self.kwargs)
         self.output()
         return super(CountedBounce, self).__call__()
 
@@ -31,7 +32,7 @@ class CountedBounce(Bounce):
             print "CountedBounce %i %i" % (cls.i, cls.c)
 
 
-#Bounce = CountedBounce
+# Bounce = CountedBounce
 
 
 def trampoline(value):

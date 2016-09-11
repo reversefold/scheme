@@ -2,6 +2,7 @@ import math
 
 from scheme.parser.token import base
 
+
 class plus(base.token):
     symbol = '+'
 
@@ -16,6 +17,7 @@ class plus(base.token):
                 return base.Bounce(k, base.number(a_val + b_val))
             return base.Bounce(b.ceval, with_b, env)
         return base.Bounce(a.ceval, with_a, env)
+
 
 class minus(base.token):
     symbol = '-'
@@ -32,6 +34,7 @@ class minus(base.token):
             return base.Bounce(b.ceval, with_b, env)
         return base.Bounce(a.ceval, with_a, env)
 
+
 class mult(base.token):
     symbol = '*'
 
@@ -46,6 +49,7 @@ class mult(base.token):
                 return base.Bounce(k, base.number(a_val * b_val))
             return base.Bounce(b.ceval, with_b, env)
         return base.Bounce(a.ceval, with_a, env)
+
 
 class div(base.token):
     symbol = '/'
@@ -62,6 +66,7 @@ class div(base.token):
             return base.Bounce(b.ceval, with_b, env)
         return base.Bounce(a.ceval, with_a, env)
 
+
 class gt(base.token):
     symbol = '>'
 
@@ -77,6 +82,7 @@ class gt(base.token):
             return base.Bounce(b.ceval, with_b, env)
         return base.Bounce(a.ceval, with_a, env)
 
+
 class lt(base.token):
     symbol = '<'
 
@@ -91,6 +97,7 @@ class lt(base.token):
                 return base.Bounce(k, base.boolean(a_val < b_val))
             return base.Bounce(b.ceval, with_b, env)
         return base.Bounce(a.ceval, with_a, env)
+
 
 class eq_op(base.token):
     symbol = '='

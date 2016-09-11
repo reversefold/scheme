@@ -1,5 +1,6 @@
 from scheme.parser.token import base
 
+
 class char_t(base.token):
     def __init__(self, value):
         self.value = value
@@ -37,9 +38,11 @@ class char_t(base.token):
     def upper(self):
         return char_t(self.value.upper())
 
+
 class char_u(char_t):
     def __init__(self, num):
         super(char_u, self).__init__(unichr(num))
+
 
 class named_char(char_t):
     def __init__(self, name):
@@ -96,6 +99,7 @@ class named_char(char_t):
         'DEL':       chr(127),
     }
 
+
 class char_eq(base.token):
     symbol = 'char=?'
 
@@ -106,6 +110,7 @@ class char_eq(base.token):
     @staticmethod
     def ceval(k, env, a, b):
         return base.Bounce(k, a == b)
+
 
 class char_lt(base.token):
     symbol = 'char<?'
@@ -118,6 +123,7 @@ class char_lt(base.token):
     def ceval(k, env, a, b):
         return base.Bounce(k, a < b)
 
+
 class char_gt(base.token):
     symbol = 'char>?'
 
@@ -128,6 +134,7 @@ class char_gt(base.token):
     @staticmethod
     def ceval(k, env, a, b):
         return base.Bounce(k, a > b)
+
 
 class char_le(base.token):
     symbol = 'char<=?'
@@ -140,6 +147,7 @@ class char_le(base.token):
     def ceval(k, env, a, b):
         return base.Bounce(k, a <= b)
 
+
 class char_ge(base.token):
     symbol = 'char>=?'
 
@@ -150,6 +158,7 @@ class char_ge(base.token):
     @staticmethod
     def ceval(k, env, a, b):
         return base.Bounce(k, a >= b)
+
 
 class char_ci_eq(base.token):
     symbol = 'char-ci=?'
@@ -162,6 +171,7 @@ class char_ci_eq(base.token):
     def ceval(k, env, a, b):
         return base.Bounce(k, a.lower() == b.lower())
 
+
 class char_ci_lt(base.token):
     symbol = 'char-ci<?'
 
@@ -172,6 +182,7 @@ class char_ci_lt(base.token):
     @staticmethod
     def ceval(k, env, a, b):
         return base.Bounce(k, a.lower() < b.lower())
+
 
 class char_ci_gt(base.token):
     symbol = 'char-ci>?'
@@ -184,6 +195,7 @@ class char_ci_gt(base.token):
     def ceval(k, env, a, b):
         return base.Bounce(k, a.lower() > b.lower())
 
+
 class char_ci_le(base.token):
     symbol = 'char-ci<=?'
 
@@ -194,6 +206,7 @@ class char_ci_le(base.token):
     @staticmethod
     def ceval(k, env, a, b):
         return base.Bounce(k, a.lower() <= b.lower())
+
 
 class char_ci_ge(base.token):
     symbol = 'char-ci>=?'
@@ -206,6 +219,7 @@ class char_ci_ge(base.token):
     def ceval(k, env, a, b):
         return base.Bounce(k, a.lower() >= b.lower())
 
+
 class char_to_name(base.token):
     symbol = 'char->name'
 
@@ -216,6 +230,7 @@ class char_to_name(base.token):
     @staticmethod
     def ceval(k, env, val):
         raise Exception("Not finished")
+
 
 class name_to_char(base.token):
     symbol = 'name->char'

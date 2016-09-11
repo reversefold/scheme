@@ -1,5 +1,6 @@
 from scheme.parser.token import base, char, string
 
+
 class eqv(base.token):
     symbol = 'eqv?'
 
@@ -33,6 +34,7 @@ class eqv(base.token):
 #            return base.Bounce(b.eval, with_b_value, env)
 #        return base.Bounce(a.eval, with_a_value, env)
 
+
 class eq(base.token):
     symbol = 'eq?'
 
@@ -54,18 +56,21 @@ class eq(base.token):
 #            return base.Bounce(b.eval, with_b_value, env)
 #        return base.Bounce(a.eval, with_a_value, env)
 
+
 class equal(base.token):
     symbol = 'equal?'
 
     @staticmethod
     def eval(env, a, b):
-#        return equal._eval(env, a, b)
+        # return equal._eval(env, a, b)
         return equal._eval(env, a.eval(env), b.eval(env))
 
     @staticmethod
     def _eval(env, a, b):
-        if (isinstance(a, base.tuple) and isinstance(b, base.tuple)
-            or isinstance(a, string.string_t) and isinstance(b, string.string_t)):
+        if (
+            isinstance(a, base.tuple) and isinstance(b, base.tuple)
+            or isinstance(a, string.string_t) and isinstance(b, string.string_t)
+        ):
             if len(a) != len(b):
                 return base.boolean(False)
             for i in xrange(len(a)):
@@ -77,7 +82,7 @@ class equal(base.token):
 
     @staticmethod
     def ceval(k, env, a, b):
-#        return base.Bounce(k, equal._eval(env, a, b))
+        # return base.Bounce(k, equal._eval(env, a, b))
         def with_a_value(a_value):
             def with_b_value(b_value):
                 return base.Bounce(k, equal._eval(env, a_value, b_value))

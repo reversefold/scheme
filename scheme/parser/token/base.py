@@ -4,12 +4,14 @@ import fractions
 
 from scheme.trampoline import Bounce
 
+
 class token(object):
     def __str__(self):
         return self.__class__.symbol
 
     def __nonzero__(self):
         return True
+
 
 class tuple(token):
     def __init__(self, value):
@@ -44,11 +46,13 @@ class tuple(token):
 def resolve_list(k, env, lst):
     if not lst:
         return Bounce(k, tuple([]))
+
     def with_val(v):
         def with_resolved(r):
             return Bounce(k, tuple([v]) + r)
         return Bounce(resolve_list, with_resolved, env, lst[1:])
     return Bounce(lst[0].ceval, with_val, env)
+
 
 def return_last(k, env, l):
     def with_val(v):
@@ -73,6 +77,7 @@ class quoted(token):
             return str(self.value)
         return "'%s" % (str(self.value),)
 
+
 class quote(token):
     symbol = 'quote'
 
@@ -83,6 +88,7 @@ class quote(token):
     @staticmethod
     def ceval(k, env, l):
         return Bounce(k, quoted(l))
+
 
 class number(token):
     def __init__(self, value):
@@ -131,6 +137,7 @@ class number(token):
     def __str__(self):
         return str(self.value)
 
+
 class boolean(token):
     def __init__(self, value):
         if value == '#t':
@@ -150,6 +157,7 @@ class boolean(token):
 
     def __str__(self):
         return '#t' if self.value else '#f'
+
 
 class label(token):
     def __init__(self, value):

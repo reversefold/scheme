@@ -47,8 +47,9 @@ class environment(object):
         if self.parent is None:
             return base.Bounce(k, self.dict)
         # TODO: This causes an error ....
-        #if self._flattened:
+        # if self._flattened:
         #    return base.Bounce(k, self._flattened)
+
         def with_flattened_parent(v):
             self._flattened = dict(v.items() + self.dict.items())
             return base.Bounce(k, self._flattened)
